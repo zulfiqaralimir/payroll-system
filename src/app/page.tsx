@@ -1,5 +1,6 @@
 'use client';
 
+import DashboardSummary from '@/components/DashboardSummary';
 import React, { useState } from 'react';
 import EmployeeForm from '@/components/EmployeeForm';
 import AttendanceForm from '@/components/AttendanceForm';
@@ -35,6 +36,7 @@ export default function Home() {
       <EmployeeForm employees={employees} setEmployees={setEmployees} />
       <AttendanceForm attendance={attendance} setAttendance={setAttendance} employees={employees} />
       <SalaryCalculator employees={employees} attendance={attendance} />
+      <DashboardSummary employees={employees} salaries={[]} />
     </main>
   );
 }
