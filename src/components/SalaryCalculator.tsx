@@ -14,7 +14,20 @@ interface Props {
 }
 
 export default function SalaryCalculator({ employees, attendance }: Props) {
-  const [salaries, setSalaries] = useState<any[]>([]);
+  interface SalarySlip {
+  employee_id: string;
+  name: string;
+  presentDays: number;
+  absentDays: number;
+  grossSalary: number;
+  deduction: number;
+  overtimeAmount: number;
+  tax: number;
+  netSalary: number;
+}
+
+const [salaries, setSalaries] = useState<SalarySlip[]>([]);
+
   const [overtimeHours, setOvertimeHours] = useState<Record<string, number>>({});
 
   const handleOvertimeChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
