@@ -1,17 +1,12 @@
-import * as React from "react";
+import React from 'react';
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
-
-const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, ...props }, ref) => {
+export const Input: React.FC<InputProps> = (props) => {
   return (
     <input
-      ref={ref}
-      className={`border border-gray-300 p-2 rounded w-full ${className}`}
       {...props}
+      className={`border rounded px-2 py-1 w-full focus:outline-none focus:ring focus:border-blue-300 ${props.className || ''}`}
     />
   );
-});
-Input.displayName = "Input";
-
-export { Input };
+};

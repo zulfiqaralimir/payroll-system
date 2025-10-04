@@ -1,17 +1,14 @@
-import * as React from "react";
+import React from 'react';
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, ...props }, ref) => {
+export const Button: React.FC<ButtonProps> = ({ children, ...props }) => {
   return (
     <button
-      ref={ref}
-      className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded ${className}`}
       {...props}
-    />
+      className={`px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition ${props.className || ''}`}
+    >
+      {children}
+    </button>
   );
-});
-Button.displayName = "Button";
-
-export { Button };
+};
