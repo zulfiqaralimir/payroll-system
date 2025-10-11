@@ -41,23 +41,29 @@ export default function TaxCertificate({ employee, salary }: TaxCertificateProps
   return (
     <div className="border p-4 rounded shadow mt-10">
       <div ref={certRef} className="text-sm space-y-1">
-        {/* ✅ Logo + Address */}
-        <div className="text-center mb-4">
-          <img src="/wellserve-logo.png" alt="Wellserve Logo" className="h-12 mx-auto mb-2" />
-          <h2 className="text-lg font-bold">Wellserve Oilfield Services (Pvt) Ltd.</h2>
-          <p className="text-sm">
-            Plot # 51 & 52, Street # 1, I - 10 / 3, Industrial Area, Islamabad<br />
-            (+92 51 4100 311 – 14)
-          </p>
-        </div>
+        {/* ✅ LOGO + Header */}
+        <img
+          src="/wellserve-logo.png"
+          alt="Wellserve Logo"
+          style={{ width: '120px', marginBottom: '10px' }}
+        />
+        <h2 className="text-lg font-bold">Annual Tax Deduction Certificate - 2025</h2>
 
-        <h2 className="text-xl font-bold mb-2">Annual Tax Deduction Certificate - 2025</h2>
+        {/* ✅ Company Info */}
+        <p><strong>Wellserve Oilfield Services (Pvt) Ltd.</strong></p>
+        <p>Plot # 51 & 52, Street # 1, I - 10 / 3, Industrial Area</p>
+        <p>Islamabad ( +92 51 4100 311 - 14 )</p>
+        <hr />
+
+        {/* ✅ Employee Info */}
         <p><strong>Employee ID:</strong> {employee.employee_id}</p>
         <p><strong>Name:</strong> {employee.name}</p>
         <p><strong>CNIC:</strong> {employee.cnic}</p>
         <p><strong>Designation:</strong> {employee.designation}</p>
         <p><strong>Department:</strong> {employee.department}</p>
         <hr />
+
+        {/* ✅ Salary Info */}
         <p><strong>Total Salary (Year):</strong> Rs. {totalSalary.toFixed(2)}</p>
         <p><strong>Total Tax Paid:</strong> Rs. {totalTax.toFixed(2)}</p>
         <p><strong>PSID/CPR Ref:</strong> {fakeRef}</p>
