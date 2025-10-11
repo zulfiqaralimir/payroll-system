@@ -3,7 +3,6 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/button';
 
-
 interface PayslipProps {
   employee: {
     employee_id: string;
@@ -26,26 +25,35 @@ interface PayslipProps {
 export default function PayslipGenerator({ employee, salary, month }: PayslipProps) {
   const slipRef = useRef(null);
 
-const downloadPDF = async () => {
-  if (!slipRef.current) return;
+  const downloadPDF = async () => {
+    if (!slipRef.current) return;
 
-  const html2pdf = (await import('html2pdf.js')).default;
+    const html2pdf = (await import('html2pdf.js')).default;
 
-  const opt = {
-    margin: 0.5,
-    filename: `${employee.employee_id}_Payslip_${month}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: {},
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    const opt = {
+      margin: 0.5,
+      filename: `${employee.employee_id}_Payslip_${month}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {},
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    };
+
+    html2pdf().from(slipRef.current).set(opt).save();
   };
-
-  html2pdf().from(slipRef.current).set(opt).save();
-};
-
 
   return (
     <div className="border p-4 rounded shadow mt-10">
       <div ref={slipRef} className="space-y-2 text-sm">
+        {/* ✅ Logo + Address */}
+        <div className="text-center mb-4">
+          <img src="/wellserve-logo.png" alt="Wellserve Logo" className="h-12 mx-auto mb-2" />
+          <h2 className="text-lg font-bold">Wellserve Oilfield Services (Pvt) Ltd.</h2>
+          <p className="text-sm">
+            Plot # 51 & 52, Street # 1, I - 10 / 3, Industrial Area, Islamabad<br />
+            (+92 51 4100 311 – 14)
+          </p>
+        </div>
+
         <h2 className="text-xl font-bold mb-2">Payslip - {month}</h2>
         <p><strong>Name:</strong> {employee.name}</p>
         <p><strong>ID:</strong> {employee.employee_id}</p>

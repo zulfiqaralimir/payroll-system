@@ -32,12 +32,12 @@ export default function SalaryCalculator({ employees, attendance }: SalaryCalcul
       const presentDays = empAttendance.filter((a) => a.status === 'Present').length;
       const absentDays = empAttendance.filter((a) => a.status === 'Absent').length;
 
-      const basicSalary = emp.basic_salary || 0;
-      const allowance = emp.allowance || 0;
+      const basicSalary = Number(emp.basic_salary) || 0;
+      const allowance = Number(emp.allowance) || 0;
       const grossSalary = basicSalary + allowance;
 
       const deduction = (grossSalary / 30) * absentDays;
-      const overtimeAmount = (grossSalary / 30 / 8) * (Math.floor(Math.random() * 10)); // random overtime example
+      const overtimeAmount = (grossSalary / 30 / 8) * Math.floor(Math.random() * 10);
       const tax = grossSalary * 0.05;
       const netSalary = grossSalary - deduction + overtimeAmount - tax;
 
@@ -67,11 +67,11 @@ export default function SalaryCalculator({ employees, attendance }: SalaryCalcul
           <p><strong>Employee:</strong> {sal.name} ({sal.employee_id})</p>
           <p><strong>Present Days:</strong> {sal.presentDays}</p>
           <p><strong>Absent Days:</strong> {sal.absentDays}</p>
-          <p><strong>Overtime Earned:</strong> Rs. {sal.overtimeAmount.toFixed(2)}</p>
-          <p><strong>Gross Salary:</strong> Rs. {sal.grossSalary.toFixed(2)}</p>
-          <p><strong>Deduction (Absents):</strong> Rs. {sal.deduction.toFixed(2)}</p>
-          <p><strong>Tax (5%):</strong> Rs. {sal.tax.toFixed(2)}</p>
-          <p><strong>Net Salary:</strong> Rs. {sal.netSalary.toFixed(2)}</p>
+          <p><strong>Overtime Earned:</strong> Rs. {Number(sal.overtimeAmount).toFixed(2)}</p>
+          <p><strong>Gross Salary:</strong> Rs. {Number(sal.grossSalary).toFixed(2)}</p>
+          <p><strong>Deduction (Absents):</strong> Rs. {Number(sal.deduction).toFixed(2)}</p>
+          <p><strong>Tax (5%):</strong> Rs. {Number(sal.tax).toFixed(2)}</p>
+          <p><strong>Net Salary:</strong> Rs. {Number(sal.netSalary).toFixed(2)}</p>
 
           <PayslipGenerator
             employee={{
