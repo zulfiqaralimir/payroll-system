@@ -1,5 +1,41 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+# 🧾 Payroll System – Prototype by Zulfiqar Ali Mir
+
+A modern payroll system prototype built with **React, TypeScript, Tailwind CSS**, and **html2pdf.js**.
+
+## ✅ Features
+
+- Add employee master data
+- Track attendance
+- Calculate salary (basic, overtime, tax, deductions)
+- Generate printable **payslips & tax certificates**
+- Download PDF reports
+- Match client-specific layout (Wellserve format)
+
+## 📁 Tech Stack
+
+- React + TypeScript
+- Tailwind CSS
+- `html2pdf.js` for PDF generation
+- `useState` for temporary data
+- No backend (yet) – prototype only
+
+## 📸 Screenshots
+
+> Insert screenshots here of:
+- Form
+- Dashboard
+- Payslip
+- Tax Certificate
+
+## 📦 How to Run
+
+```bash
+npm install
+npm run dev
+
+
 ## Getting Started
 
 First, run the development server:
