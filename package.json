@@ -9,6 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ag-grid-community/core": "^32.3.9",
+    "ag-grid-community": "^33.0.0",
+    "ag-grid-react": "^33.0.0",
     "html2pdf.js": "^0.12.1",
     "next": "15.5.4",
     "react": "19.1.0",
