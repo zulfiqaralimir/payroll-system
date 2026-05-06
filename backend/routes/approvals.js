@@ -14,6 +14,29 @@ const monthYearRules = [
   param('year').isInt({ min: 2020, max: 2099 }).withMessage('year must be 2020–2099'),
 ];
 
+// GET all payroll periods with approval status (CFO dashboard)
+router.get('/', async (req, res) => {
+  try {
+    const r = await pool.query(`
+      SELECT
+        month, year, status,
+        COUNT(*)                  AS employees,
+        SUM(gross_salary)         AS total_gross,
+        SUM(total_deductions)     AS total_deductions,
+        SUM(net_salary)           AS total_net,
+        MAX(updated_at)           AS last_updated,
+        MAX(remarks)              AS remarks,
+        MAX(approved_by::text)    AS approved_by
+      FROM payroll_runs
+      GROUP BY month, year, status
+      ORDER BY year DESC, month DESC, status
+    `);
+    res.json({ success: true, data: r.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // GET status for a month
 router.get('/:month/:year', monthYearRules, validate, async (req, res) => {
   try {

@@ -11,6 +11,7 @@ import EmployeeDetail from './pages/EmployeeDetail';
 import Payroll from './pages/Payroll';
 import PayrollDetail from './pages/PayrollDetail';
 import Payslips from './pages/Payslips';
+import Approvals from './pages/Approvals';
 
 /* Placeholder pages for routes not yet built — coming in later phases */
 function ComingSoon({ title }) {
@@ -83,8 +84,8 @@ export default function App() {
         } />
 
         <Route path="/approvals" element={
-          <ProtectedRoute roles={['admin', 'cfo']}>
-            <Layout><ComingSoon title="CFO Approval Workflow" /></Layout>
+          <ProtectedRoute roles={['admin', 'cfo', 'hr_manager']}>
+            <Layout><Approvals /></Layout>
           </ProtectedRoute>
         } />
 
