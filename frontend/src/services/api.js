@@ -1,6 +1,12 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api' });
+// In production (Vercel), VITE_API_URL points to the Railway backend.
+// In development, Vite proxies /api → localhost:5000.
+const baseURL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : '/api';
+
+const api = axios.create({ baseURL });
 
 // Module-level token — stored in memory only (not localStorage per spec)
 let _token = null;
