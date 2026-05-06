@@ -218,33 +218,95 @@ router.get('/employees', async (req, res) => {
   }
 });
 
-// GET /api/reports/dashboard — dashboard summary for all periods
+// GET /api/reports/dashboard — dashboard summary
 router.get('/dashboard', async (req, res) => {
   try {
-    const latestPayroll = (await pool.query(`
-      SELECT month, year, status, COUNT(*) AS employees,
-             SUM(gross_salary) AS total_gross, SUM(net_salary) AS total_net
-      FROM payroll_runs
-      GROUP BY month, year, status
-      ORDER BY year DESC, month DESC LIMIT 6
-    `)).rows;
+    const [empRow, deptRow, pendingRow, periodsRaw, deptCostRaw, trendRaw] = await Promise.all([
+      pool.query(`SELECT COUNT(*) AS total FROM employees WHERE is_active=true`),
+      pool.query(`SELECT COUNT(*) AS total FROM departments WHERE is_active=true`),
+      pool.query(`SELECT COUNT(DISTINCT month||'-'||year) AS cnt FROM payroll_runs WHERE status='submitted'`),
+      pool.query(`
+        SELECT month, year, status, COUNT(*) AS employees,
+               SUM(gross_salary) AS total_gross, SUM(net_salary) AS total_net
+        FROM payroll_runs
+        GROUP BY month, year, status
+        ORDER BY year DESC, month DESC LIMIT 6
+      `),
+      pool.query(`
+        SELECT d.name AS department, d.staff_type,
+               SUM(pr.net_salary) AS total_net, COUNT(pr.id) AS employees
+        FROM payroll_runs pr
+        JOIN employees e ON pr.employee_id = e.id
+        JOIN departments d ON e.department_id = d.id
+        WHERE (pr.month, pr.year) = (
+          SELECT month, year FROM payroll_runs ORDER BY year DESC, month DESC LIMIT 1
+        )
+        GROUP BY d.id, d.name, d.staff_type
+        ORDER BY total_net DESC
+      `),
+      pool.query(`
+        SELECT month, year,
+               SUM(gross_salary) AS total_gross,
+               SUM(net_salary)   AS total_net,
+               SUM(total_deductions) AS total_deductions,
+               COUNT(*) AS employees
+        FROM payroll_runs
+        GROUP BY month, year
+        ORDER BY year ASC, month ASC
+        LIMIT 12
+      `)
+    ]);
 
-    const empCount = (await pool.query(`
-      SELECT COUNT(*) AS total FROM employees WHERE is_active=true
-    `)).rows[0];
-
-    const deptCount = (await pool.query(`
-      SELECT COUNT(*) AS total FROM departments WHERE is_active=true
-    `)).rows[0];
+    const recentPayrolls = periodsRaw.rows;
+    const latest = recentPayrolls[0];
 
     res.json({
       success: true,
       data: {
-        activeEmployees: empCount.total,
-        activeDepartments: deptCount.total,
-        recentPayrolls: latestPayroll
+        activeEmployees:   empRow.rows[0].total,
+        activeDepartments: deptRow.rows[0].total,
+        pendingApprovals:  pendingRow.rows[0].cnt,
+        thisMonthNet:      latest?.total_net || 0,
+        thisMonthGross:    latest?.total_gross || 0,
+        thisMonthEmployees: latest?.employees || 0,
+        thisMonthStatus:   latest?.status || null,
+        thisMonthLabel:    latest ? `${latest.month}/${latest.year}` : null,
+        recentPayrolls,
+        departmentCosts:   deptCostRaw.rows,
+        monthlyTrend:      trendRaw.rows,
       }
     });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// GET /api/reports/tax/:month/:year — income tax report per employee
+router.get('/tax/:month/:year', monthYearRules, validate, async (req, res) => {
+  const { month, year } = req.params;
+  try {
+    const r = await pool.query(`
+      SELECT e.employee_id AS emp_code, e.name AS emp_name, e.cnic,
+             d.name AS department,
+             pr.basic_pay, pr.gross_salary,
+             pr.income_tax, pr.income_tax * 12 AS annual_tax_projection,
+             pr.status
+      FROM payroll_runs pr
+      JOIN employees e ON pr.employee_id = e.id
+      JOIN departments d ON e.department_id = d.id
+      WHERE pr.month=$1 AND pr.year=$2
+      ORDER BY pr.income_tax DESC
+    `, [month, year]);
+
+    const totals = (await pool.query(`
+      SELECT SUM(income_tax) AS total_tax,
+             SUM(income_tax*12) AS total_annual_projection,
+             COUNT(*) FILTER (WHERE income_tax > 0) AS taxable_employees,
+             COUNT(*) AS total_employees
+      FROM payroll_runs WHERE month=$1 AND year=$2
+    `, [month, year])).rows[0];
+
+    res.json({ success: true, data: r.rows, totals, count: r.rowCount });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

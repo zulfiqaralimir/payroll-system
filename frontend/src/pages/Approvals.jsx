@@ -38,11 +38,12 @@ export default function Approvals() {
   const load = useCallback(async () => {
     setLoading(true); setError('');
     try {
-      const r = await api.get('/approvals');
+      const r = await api.get('/approvals/list');
       if (r.success) setPeriods(r.data);
       else setError(r.error || 'Failed to load');
-    } catch { setError('Failed to load approval data'); }
-    finally { setLoading(false); }
+    } catch (e) {
+      setError('Failed to load: ' + (e.response?.data?.error || e.message || 'Unknown error'));
+    } finally { setLoading(false); }
   }, []);
 
   useEffect(() => { load(); }, [load]);

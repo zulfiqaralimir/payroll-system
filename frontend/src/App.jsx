@@ -12,17 +12,8 @@ import Payroll from './pages/Payroll';
 import PayrollDetail from './pages/PayrollDetail';
 import Payslips from './pages/Payslips';
 import Approvals from './pages/Approvals';
-
-/* Placeholder pages for routes not yet built — coming in later phases */
-function ComingSoon({ title }) {
-  return (
-    <div className="p-8 flex flex-col items-center justify-center min-h-96 text-center">
-      <div className="text-6xl mb-4">🚧</div>
-      <h2 className="text-xl font-bold text-gray-700 mb-2">{title}</h2>
-      <p className="text-gray-400 text-sm">This module will be built in a later phase.</p>
-    </div>
-  );
-}
+import Reports from './pages/Reports';
+import UserManagement from './pages/UserManagement';
 
 export default function App() {
   return (
@@ -90,14 +81,14 @@ export default function App() {
         } />
 
         <Route path="/reports" element={
-          <ProtectedRoute roles={['admin', 'cfo']}>
-            <Layout><ComingSoon title="Reports & Analytics" /></Layout>
+          <ProtectedRoute roles={['admin', 'cfo', 'hr_manager']}>
+            <Layout><Reports /></Layout>
           </ProtectedRoute>
         } />
 
         <Route path="/users" element={
           <ProtectedRoute roles={['admin']}>
-            <Layout><ComingSoon title="User Management" /></Layout>
+            <Layout><UserManagement /></Layout>
           </ProtectedRoute>
         } />
 

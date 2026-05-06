@@ -15,21 +15,20 @@ const monthYearRules = [
 ];
 
 // GET all payroll periods with approval status (CFO dashboard)
-router.get('/', async (req, res) => {
+router.get('/list', async (req, res) => {
   try {
     const r = await pool.query(`
       SELECT
         month, year, status,
-        COUNT(*)                  AS employees,
-        SUM(gross_salary)         AS total_gross,
-        SUM(total_deductions)     AS total_deductions,
-        SUM(net_salary)           AS total_net,
-        MAX(updated_at)           AS last_updated,
-        MAX(remarks)              AS remarks,
-        MAX(approved_by::text)    AS approved_by
+        COUNT(*)              AS employees,
+        SUM(gross_salary)     AS total_gross,
+        SUM(total_deductions) AS total_deductions,
+        SUM(net_salary)       AS total_net,
+        MAX(updated_at)       AS last_updated,
+        MAX(remarks)          AS remarks
       FROM payroll_runs
       GROUP BY month, year, status
-      ORDER BY year DESC, month DESC, status
+      ORDER BY year DESC, month DESC
     `);
     res.json({ success: true, data: r.rows });
   } catch (err) {
