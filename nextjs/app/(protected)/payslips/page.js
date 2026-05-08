@@ -14,8 +14,6 @@ export default function Payslips() {
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState('');
   const [search,      setSearch]      = useState('');
-  const [downloading, setDownloading] = useState(null);
-  const [zipping,     setZipping]     = useState(false);
 
   const years = [];
   for (let y = now.getFullYear(); y >= 2024; y--) years.push(y);
@@ -35,48 +33,12 @@ export default function Payslips() {
 
   useEffect(() => { loadList(month, year); }, [month, year, loadList]);
 
-  const downloadPDF = async (payrollRunId, empCode) => {
-    setDownloading(payrollRunId);
-    try {
-      const period   = `${MONTHS[month - 1].slice(0, 3)}-${year}`;
-      const filename = `Payslip-${empCode}-${period}.pdf`;
-      const token = typeof window !== 'undefined' ? localStorage.getItem('ws_token') : null;
-      const res = await fetch(`/api/payslips/pdf/${payrollRunId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!res.ok) throw new Error('Download failed');
-      const blob = await res.blob();
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href = url; a.download = filename; a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      alert('Download failed: ' + e.message);
-    } finally {
-      setDownloading(null);
-    }
+  const openPDF = (payrollRunId) => {
+    window.open(`/api/payslips/pdf/${payrollRunId}`, '_blank');
   };
 
-  const downloadZip = async () => {
-    setZipping(true);
-    try {
-      const period   = `${MONTHS[month - 1].slice(0, 3)}-${year}`;
-      const filename = `WellServe-Payslips-${period}.zip`;
-      const token    = typeof window !== 'undefined' ? localStorage.getItem('ws_token') : null;
-      const res = await fetch(`/api/payslips/zip/${month}/${year}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (!res.ok) throw new Error('ZIP generation failed');
-      const blob = await res.blob();
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href = url; a.download = filename; a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      alert('ZIP download failed: ' + e.message);
-    } finally {
-      setZipping(false);
-    }
+  const printAll = () => {
+    window.open(`/api/payslips/zip/${month}/${year}`, '_blank');
   };
 
   const previewPayslip = (payrollRunId) => {
@@ -105,12 +67,12 @@ export default function Payslips() {
           <p className="text-sm text-gray-400 mt-0.5">Generate and download PDF payslips for any payroll period</p>
         </div>
         {rows.length > 0 && (
-          <button onClick={downloadZip} disabled={zipping}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-semibold rounded-lg transition">
-            {zipping
-              ? <><svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>Generating ZIP...</>
-              : <><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Download All ({rows.length}) as ZIP</>
-            }
+          <button onClick={printAll}
+            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            Print All ({rows.length}) Payslips
           </button>
         )}
       </div>
@@ -212,13 +174,12 @@ export default function Payslips() {
                           </svg>
                           Preview
                         </button>
-                        <button onClick={() => downloadPDF(r.id, r.employee_id_code)} disabled={downloading === r.id}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-white bg-[#0f1e3a] hover:bg-[#1a2f5a] disabled:bg-gray-400 rounded-lg transition">
-                          {downloading === r.id
-                            ? <svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
-                            : <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                          }
-                          PDF
+                        <button onClick={() => openPDF(r.id)}
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-white bg-[#0f1e3a] hover:bg-[#1a2f5a] rounded-lg transition">
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                          </svg>
+                          Print PDF
                         </button>
                       </div>
                     </td>
