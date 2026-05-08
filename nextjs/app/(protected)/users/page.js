@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useAuth } from '../../../lib/AuthContext';
 import api from '../../../lib/api';
 
@@ -75,15 +76,19 @@ export default function UserManagement() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900">User Management</h1>
-          <p className="text-sm text-gray-400 mt-0.5">Manage system users and their roles</p>
+          <p className="text-sm text-gray-400 mt-0.5">
+            {me?.role === 'cfo' ? 'Manage user permissions' : 'Manage system users and their roles'}
+          </p>
         </div>
-        <button onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
-          </svg>
-          Add User
-        </button>
+        {me?.role === 'admin' && (
+          <button onClick={openCreate}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
+            </svg>
+            Add User
+          </button>
+        )}
       </div>
 
       {msg && (
@@ -193,9 +198,20 @@ export default function UserManagement() {
                     <td className="px-5 py-3 text-gray-400 text-xs">{fmtDate(u.created_at)}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
-                        <button onClick={() => openEdit(u)} className="text-xs text-blue-600 hover:underline font-medium">Edit</button>
-                        {u.id !== me?.id && (
+                        {me?.role === 'admin' && (
+                          <button onClick={() => openEdit(u)} className="text-xs text-blue-600 hover:underline font-medium">Edit</button>
+                        )}
+                        {me?.role === 'admin' && u.id !== me?.id && (
                           <button onClick={() => handleDeactivate(u)} className="text-xs text-red-500 hover:underline font-medium">Deactivate</button>
+                        )}
+                        {me?.role === 'cfo' && (
+                          <Link href={`/users/${u.id}/permissions`}
+                            className="flex items-center gap-1 text-xs text-purple-600 hover:underline font-medium">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                            </svg>
+                            Permissions
+                          </Link>
                         )}
                       </div>
                     </td>

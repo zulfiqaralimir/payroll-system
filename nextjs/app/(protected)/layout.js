@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/AuthContext';
+import { PermissionsProvider, usePermissions } from '../../lib/PermissionsContext';
 import api from '../../lib/api';
 import ExcelImportBanner from '../../components/ExcelImportBanner';
+import AccessDenied from '../../components/AccessDenied';
 
 function NavIcon({ d }) {
   return (
@@ -16,22 +18,42 @@ function NavIcon({ d }) {
 }
 
 const NAV = [
-  { to: '/dashboard', label: 'Dashboard', roles: ['admin','hr_manager','cfo'], icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-  { to: '/employees', label: 'Employees', roles: ['admin','hr_manager'], icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
-  { to: '/master',    label: 'Database',  roles: ['admin','hr_manager'], icon: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4' },
-  { to: '/payroll',   label: 'Payroll',   roles: ['admin','hr_manager','cfo'], icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' },
-  { to: '/payslips',  label: 'Payslips',  roles: ['admin','hr_manager'], icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-  { to: '/approvals', label: 'Approvals', roles: ['admin','hr_manager','cfo'], icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', badge: 'pending' },
-  { to: '/reports',   label: 'Reports',   roles: ['admin','hr_manager','cfo'], icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-  { to: '/users',     label: 'Users',     roles: ['admin'], icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+  { to: '/dashboard', module: 'dashboard', label: 'Dashboard', roles: ['admin','hr_manager','cfo'], icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+  { to: '/employees', module: 'employees', label: 'Employees', roles: ['admin','hr_manager','cfo'], icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
+  { to: '/master',    module: 'database',  label: 'Database',  roles: ['admin','hr_manager','cfo'], icon: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4' },
+  { to: '/payroll',   module: 'payroll',   label: 'Payroll',   roles: ['admin','hr_manager','cfo'], icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' },
+  { to: '/payslips',  module: 'payslips',  label: 'Payslips',  roles: ['admin','hr_manager','cfo'], icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+  { to: '/approvals', module: 'approvals', label: 'Approvals', roles: ['admin','hr_manager','cfo'], icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', badge: 'pending' },
+  { to: '/reports',   module: 'reports',   label: 'Reports',   roles: ['admin','hr_manager','cfo'], icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+  { to: '/users',     module: 'users',     label: 'Users',     roles: ['admin','cfo'],              icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
 ];
 
-const ROLE_BADGE = { admin: 'bg-red-500/20 text-red-300', hr_manager: 'bg-blue-500/20 text-blue-300', cfo: 'bg-purple-500/20 text-purple-300' };
-const ROLE_LABEL = { admin: 'Admin', hr_manager: 'HR Manager', cfo: 'CFO' };
+const PATH_TO_MODULE = {
+  '/dashboard': 'dashboard',
+  '/employees': 'employees',
+  '/master':    'database',
+  '/payroll':   'payroll',
+  '/payslips':  'payslips',
+  '/approvals': 'approvals',
+  '/reports':   'reports',
+  '/users':     'users',
+};
+
+const ROLE_BADGE  = { admin: 'bg-red-500/20 text-red-300', hr_manager: 'bg-blue-500/20 text-blue-300', cfo: 'bg-purple-500/20 text-purple-300' };
+const ROLE_LABEL  = { admin: 'Admin', hr_manager: 'HR Manager', cfo: 'CFO' };
 const PAGE_TITLES = { '/dashboard':'Dashboard', '/employees':'Employees', '/master':'Database Tables', '/payroll':'Payroll', '/payslips':'Payslips', '/approvals':'CFO Approval Workflow', '/reports':'Reports', '/users':'User Management' };
 
 export default function ProtectedLayout({ children }) {
+  return (
+    <PermissionsProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </PermissionsProvider>
+  );
+}
+
+function LayoutContent({ children }) {
   const { user, isAuthenticated, logout } = useAuth();
+  const { canView, loading: permsLoading }  = usePermissions();
   const router   = useRouter();
   const pathname = usePathname();
   const [collapsed,    setCollapsed]    = useState(false);
@@ -41,9 +63,7 @@ export default function ProtectedLayout({ children }) {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
-      router.replace('/login');
-    }
+    if (mounted && !isAuthenticated) router.replace('/login');
   }, [mounted, isAuthenticated, router]);
 
   useEffect(() => {
@@ -75,9 +95,21 @@ export default function ProtectedLayout({ children }) {
     );
   }
 
-  const navItems  = NAV.filter(n => n.roles.includes(user?.role));
-  const pathBase  = '/' + (pathname.split('/')[1] || 'dashboard');
-  const pageTitle = PAGE_TITLES[pathBase] || 'WellServe Payroll';
+  const pathBase      = '/' + (pathname.split('/')[1] || 'dashboard');
+  const pageTitle     = PAGE_TITLES[pathBase] || 'WellServe Payroll';
+  const currentModule = PATH_TO_MODULE[pathBase];
+
+  const navItems = NAV.filter(n => {
+    if (!n.roles.includes(user?.role)) return false;
+    if (user?.role === 'admin') return true;
+    if (!n.module || permsLoading) return true;
+    return canView(n.module);
+  });
+
+  const hasAccess = user?.role === 'admin'
+    || permsLoading
+    || !currentModule
+    || canView(currentModule);
 
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden">
@@ -191,7 +223,7 @@ export default function ProtectedLayout({ children }) {
         <ExcelImportBanner />
 
         <main className="flex-1 overflow-y-auto">
-          {children}
+          {hasAccess ? children : <AccessDenied />}
         </main>
       </div>
     </div>
