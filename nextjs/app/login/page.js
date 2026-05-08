@@ -97,10 +97,11 @@ export default function Login() {
 
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg">
-              <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <div className="w-12 h-12 rounded-xl shadow-lg flex-shrink-0 overflow-hidden"
+                 style={{background:'linear-gradient(135deg,#f97316,#ea580c)'}}>
+              <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12">
+                <text x="24" y="35" fontFamily="Arial Black, Arial, sans-serif" fontWeight="900"
+                      fontSize="28" fill="white" textAnchor="middle" letterSpacing="-1">W</text>
               </svg>
             </div>
             <div>
@@ -145,10 +146,11 @@ export default function Login() {
         <div className="w-full max-w-md">
 
           <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
+            <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0"
+                 style={{background:'linear-gradient(135deg,#f97316,#ea580c)'}}>
+              <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" className="w-9 h-9">
+                <text x="18" y="27" fontFamily="Arial Black, Arial, sans-serif" fontWeight="900"
+                      fontSize="22" fill="white" textAnchor="middle" letterSpacing="-1">W</text>
               </svg>
             </div>
             <div>
