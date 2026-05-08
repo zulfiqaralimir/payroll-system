@@ -1,7 +1,6 @@
 {
-  "buildCommand": "npm run vercel-build",
-  "outputDirectory": "frontend/dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "framework": "nextjs",
+  "buildCommand": "cd nextjs && pnpm install --no-frozen-lockfile && pnpm run build",
+  "installCommand": "echo 'root install skipped'",
+  "outputDirectory": "nextjs/.next"
 }
