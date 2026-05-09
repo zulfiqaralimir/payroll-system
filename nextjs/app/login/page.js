@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/AuthContext';
 import api from '../../lib/api';
@@ -14,6 +14,78 @@ export default function Login() {
 
   const { login } = useAuth();
   const router    = useRouter();
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animId;
+
+    const resize = () => {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const PARTICLE_COUNT = 60;
+    const MAX_DIST = 130;
+    const colors = ['#60a5fa', '#f97316', '#93c5fd', '#fbbf24', '#a78bfa'];
+
+    const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+      x:     Math.random() * canvas.width,
+      y:     Math.random() * canvas.height,
+      vx:    (Math.random() - 0.5) * 0.55,
+      vy:    (Math.random() - 0.5) * 0.55,
+      r:     Math.random() * 2 + 1.5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      });
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx   = particles[i].x - particles[j].x;
+          const dy   = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DIST) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(96,165,250,${0.18 * (1 - dist / MAX_DIST)})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = 0.75;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,57 +116,9 @@ export default function Login() {
       {/* Left panel */}
       <div className="hidden lg:flex lg:w-1/2 bg-[#0f1e3a] flex-col justify-between p-8 relative overflow-hidden">
 
-        {/* Animated background circles */}
-        <style>{`
-          @keyframes spinY { 0%{transform:rotateY(0deg)} 100%{transform:rotateY(360deg)} }
-          @keyframes fl0  { 0%,100%{transform:translate(0px,0px)}  25%{transform:translate(15px,20px)}  60%{transform:translate(-8px,10px)}  75%{transform:translate(6px,-18px)} }
-          @keyframes fl1  { 0%,100%{transform:translate(0px,0px)}  30%{transform:translate(-10px,25px)} 55%{transform:translate(8px,-12px)}  80%{transform:translate(-5px,15px)} }
-          @keyframes fl2  { 0%,100%{transform:translate(0px,0px)}  20%{transform:translate(20px,-15px)} 50%{transform:translate(-10px,8px)}  70%{transform:translate(12px,20px)} }
-          @keyframes fl3  { 0%,100%{transform:translate(0px,0px)}  35%{transform:translate(-15px,30px)} 60%{transform:translate(10px,-10px)} 80%{transform:translate(-8px,18px)} }
-          @keyframes fl4  { 0%,100%{transform:translate(0px,0px)}  25%{transform:translate(10px,-20px)} 55%{transform:translate(-6px,14px)}  75%{transform:translate(8px,-8px)} }
-          @keyframes fl5  { 0%,100%{transform:translate(0px,0px)}  30%{transform:translate(-20px,15px)} 60%{transform:translate(12px,-6px)}  85%{transform:translate(-10px,22px)} }
-          @keyframes fl6  { 0%,100%{transform:translate(0px,0px)}  20%{transform:translate(18px,22px)}  50%{transform:translate(-9px,-12px)} 75%{transform:translate(5px,16px)} }
-          @keyframes fl7  { 0%,100%{transform:translate(0px,0px)}  40%{transform:translate(-12px,-18px)} 65%{transform:translate(8px,10px)} 85%{transform:translate(-6px,-8px)} }
-          @keyframes fl8  { 0%,100%{transform:translate(0px,0px)}  25%{transform:translate(8px,28px)}   55%{transform:translate(-5px,-14px)} 80%{transform:translate(10px,10px)} }
-          @keyframes fl9  { 0%,100%{transform:translate(0px,0px)}  30%{transform:translate(-25px,12px)} 60%{transform:translate(14px,-8px)}  80%{transform:translate(-8px,20px)} }
-          @keyframes fl10 { 0%,100%{transform:translate(0px,0px)}  35%{transform:translate(15px,-25px)} 60%{transform:translate(-10px,10px)} 85%{transform:translate(8px,-15px)} }
-          @keyframes fl11 { 0%,100%{transform:translate(0px,0px)}  20%{transform:translate(-18px,20px)} 55%{transform:translate(10px,-10px)} 75%{transform:translate(-6px,14px)} }
-          @keyframes fl12 { 0%,100%{transform:translate(0px,0px)}  30%{transform:translate(12px,-15px)} 60%{transform:translate(-8px,8px)}   80%{transform:translate(6px,20px)} }
-          @keyframes fl13 { 0%,100%{transform:translate(0px,0px)}  25%{transform:translate(-8px,30px)}  55%{transform:translate(6px,-16px)}  80%{transform:translate(-12px,8px)} }
-          @keyframes fl14 { 0%,100%{transform:translate(0px,0px)}  35%{transform:translate(20px,-20px)} 60%{transform:translate(-12px,12px)} 85%{transform:translate(8px,-6px)} }
-          @keyframes fl15 { 0%,100%{transform:translate(0px,0px)}  20%{transform:translate(-15px,18px)} 50%{transform:translate(10px,-10px)} 75%{transform:translate(-6px,22px)} }
-          @keyframes fl16 { 0%,100%{transform:translate(0px,0px)}  30%{transform:translate(10px,25px)}  60%{transform:translate(-8px,-14px)} 85%{transform:translate(12px,8px)} }
-          @keyframes fl17 { 0%,100%{transform:translate(0px,0px)}  25%{transform:translate(-20px,-10px)} 55%{transform:translate(12px,6px)} 80%{transform:translate(-8px,-18px)} }
-        `}</style>
-
-        {[
-          { s:80,  t:'7%',  l:'14%', c:'#f97316', o:0.15, d:'12s', dl:'0s'   },
-          { s:45,  t:'18%', l:'70%', c:'#fbbf24', o:0.20, d:'18s', dl:'2s'   },
-          { s:120, t:'32%', l:'4%',  c:'#06b6d4', o:0.12, d:'15s', dl:'4s'   },
-          { s:60,  t:'52%', l:'78%', c:'#8b5cf6', o:0.18, d:'10s', dl:'1s'   },
-          { s:35,  t:'68%', l:'38%', c:'#ec4899', o:0.25, d:'20s', dl:'6s'   },
-          { s:90,  t:'12%', l:'53%', c:'#10b981', o:0.13, d:'14s', dl:'3s'   },
-          { s:50,  t:'78%', l:'18%', c:'#ef4444', o:0.20, d:'16s', dl:'5s'   },
-          { s:70,  t:'43%', l:'58%', c:'#f97316', o:0.15, d:'11s', dl:'7s'   },
-          { s:40,  t:'22%', l:'28%', c:'#fbbf24', o:0.22, d:'19s', dl:'2.5s' },
-          { s:100, t:'58%', l:'48%', c:'#06b6d4', o:0.10, d:'13s', dl:'1.5s' },
-          { s:55,  t:'88%', l:'72%', c:'#8b5cf6', o:0.18, d:'17s', dl:'4.5s' },
-          { s:85,  t:'4%',  l:'83%', c:'#ec4899', o:0.14, d:'9s',  dl:'8s'   },
-          { s:32,  t:'38%', l:'22%', c:'#10b981', o:0.28, d:'22s', dl:'0.5s' },
-          { s:65,  t:'72%', l:'8%',  c:'#ef4444', o:0.16, d:'14s', dl:'3.5s' },
-          { s:110, t:'48%', l:'88%', c:'#f97316', o:0.11, d:'16s', dl:'6.5s' },
-          { s:42,  t:'9%',  l:'42%', c:'#fbbf24', o:0.24, d:'12s', dl:'9s'   },
-          { s:78,  t:'28%', l:'63%', c:'#06b6d4', o:0.17, d:'20s', dl:'2s'   },
-          { s:95,  t:'63%', l:'33%', c:'#8b5cf6', o:0.13, d:'11s', dl:'7.5s' },
-        ].map((c, i) => (
-          <div key={i} className="absolute rounded-full pointer-events-none" style={{
-            width: c.s, height: c.s,
-            top: c.t, left: c.l,
-            backgroundColor: c.c,
-            opacity: c.o,
-            animation: `fl${i} ${c.d} ${c.dl} ease-in-out infinite`,
-          }} />
-        ))}
+        {/* Particle network canvas */}
+        <style>{`@keyframes spinY{0%{transform:rotateY(0deg)}100%{transform:rotateY(360deg)}}`}</style>
+        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
         <div className="relative z-10">
           <div className="flex flex-col items-center mb-5">
