@@ -42,10 +42,11 @@ export default function Login() {
     <div className="min-h-screen flex">
 
       {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#0f1e3a] flex-col justify-between p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#0f1e3a] flex-col justify-between p-8 relative overflow-hidden">
 
         {/* Animated background circles */}
         <style>{`
+          @keyframes spinY { 0%{transform:rotateY(0deg)} 100%{transform:rotateY(360deg)} }
           @keyframes fl0  { 0%,100%{transform:translate(0px,0px)}  25%{transform:translate(15px,20px)}  60%{transform:translate(-8px,10px)}  75%{transform:translate(6px,-18px)} }
           @keyframes fl1  { 0%,100%{transform:translate(0px,0px)}  30%{transform:translate(-10px,25px)} 55%{transform:translate(8px,-12px)}  80%{transform:translate(-5px,15px)} }
           @keyframes fl2  { 0%,100%{transform:translate(0px,0px)}  20%{transform:translate(20px,-15px)} 50%{transform:translate(-10px,8px)}  70%{transform:translate(12px,20px)} }
@@ -96,28 +97,23 @@ export default function Login() {
         ))}
 
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-12 h-12 rounded-xl shadow-lg flex-shrink-0 overflow-hidden"
-                 style={{background:'linear-gradient(135deg,#f97316,#ea580c)'}}>
-              <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12">
-                <text x="24" y="35" fontFamily="Arial Black, Arial, sans-serif" fontWeight="900"
-                      fontSize="28" fill="white" textAnchor="middle" letterSpacing="-1">W</text>
-              </svg>
+          <div className="flex flex-col items-center mb-5">
+            <div style={{perspective:'600px'}}>
+              <img src="/wellserve-logo.svg" alt="WellServe" width={180}
+                   style={{animation:'spinY 10s linear infinite'}} />
             </div>
-            <div>
-              <p className="text-white font-bold text-lg leading-tight">WellServe</p>
-              <p className="text-blue-300 text-xs">Oilfield Services (Pvt) Ltd</p>
-            </div>
+            <p className="text-white font-semibold text-sm mt-2 leading-tight">WellServe Oilfield Services</p>
+            <p className="text-blue-300 text-xs">(Pvt) Ltd, Islamabad</p>
           </div>
-          <h1 className="text-4xl font-bold text-white leading-tight mb-4">
+          <h1 className="text-3xl font-bold text-white leading-tight mb-2">
             HR Payroll<br />Management<br />System
           </h1>
-          <p className="text-blue-200 text-base leading-relaxed max-w-xs">
+          <p className="text-blue-200 text-sm leading-relaxed max-w-xs">
             Comprehensive payroll processing for 190+ employees across 15 departments.
           </p>
         </div>
 
-        <div className="relative z-10 space-y-4">
+        <div className="relative z-10 space-y-2">
           {[
             ['Payroll Processing',    'Monthly salary with full deductions'],
             ['CFO Approval Workflow', 'Multi-level approval before disbursement'],
@@ -145,18 +141,8 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center bg-slate-50 px-6 py-12">
         <div className="w-full max-w-md">
 
-          <div className="lg:hidden flex items-center gap-2 mb-8">
-            <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0"
-                 style={{background:'linear-gradient(135deg,#f97316,#ea580c)'}}>
-              <svg viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" className="w-9 h-9">
-                <text x="18" y="27" fontFamily="Arial Black, Arial, sans-serif" fontWeight="900"
-                      fontSize="22" fill="white" textAnchor="middle" letterSpacing="-1">W</text>
-              </svg>
-            </div>
-            <div>
-              <p className="font-bold text-gray-800 text-sm">WellServe Oilfield Services</p>
-              <p className="text-gray-400 text-xs">HR Payroll System</p>
-            </div>
+          <div className="lg:hidden flex justify-center mb-8">
+            <img src="/wellserve-logo.svg" alt="WellServe" width={100} />
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
