@@ -117,18 +117,13 @@ function LayoutContent({ children }) {
       {/* Sidebar */}
       <aside className={`${collapsed ? 'w-16' : 'w-60'} flex-shrink-0 bg-[#0f1e3a] flex flex-col transition-all duration-200 shadow-xl`}>
 
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-white/10">
-          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center flex-shrink-0 shadow">
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          {!collapsed && (
-            <div className="overflow-hidden flex-1">
-              <p className="text-white font-bold text-sm leading-tight">WellServe</p>
-              <p className="text-blue-400 text-xs leading-tight">HR Payroll v1.00</p>
+        <div className={`flex border-b border-white/10 ${collapsed ? 'flex-col items-center py-3 px-2 gap-2' : 'items-center px-4 py-3 justify-between'}`}>
+          {collapsed ? (
+            <div style={{width:40, height:40, overflow:'hidden'}}>
+              <img src="/wellserve-logo-white.svg" alt="WellServe" width={40} />
             </div>
+          ) : (
+            <img src="/wellserve-logo-white.svg" alt="WellServe" width={140} />
           )}
           <button onClick={() => setCollapsed(c => !c)}
             className="text-slate-400 hover:text-white transition-colors flex-shrink-0">
