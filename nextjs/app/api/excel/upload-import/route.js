@@ -2,16 +2,17 @@ import { NextResponse } from 'next/server';
 import { importExcelBuffer } from '@/lib/excelImport';
 import pool from '@/lib/db';
 
-export const maxDuration = 60; // allow up to 60s for large imports
+export const maxDuration = 60;
 
 export async function POST(request) {
   try {
-    const { content, filename } = await request.json();
-    if (!content) return NextResponse.json({ success: false, error: 'No file content received' }, { status: 400 });
-    if (filename && !filename.endsWith('.xlsx'))
+    const form = await request.formData();
+    const file = form.get('file');
+    if (!file) return NextResponse.json({ success: false, error: 'No file received' }, { status: 400 });
+    if (!file.name.endsWith('.xlsx'))
       return NextResponse.json({ success: false, error: 'Only .xlsx files are supported' }, { status: 400 });
 
-    const buffer = Buffer.from(content, 'base64');
+    const buffer = Buffer.from(await file.arrayBuffer());
     const results = await importExcelBuffer(buffer);
 
     await pool.query(

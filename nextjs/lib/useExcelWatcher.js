@@ -28,50 +28,37 @@ export function useExcelWatcher() {
     } finally { setImporting(false); }
   }, []);
 
-  const doInspect = useCallback((file) => {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target.result.split(',')[1];
-      try {
-        const res = await api.post('/excel/inspect', { content: base64 });
-        console.log('=== EXCEL INSPECT ===');
-        if (res.sheets) {
-          for (const sheet of res.sheets) {
-            console.log(`\nSheet: ${sheet}`);
-            console.log('First 5 rows:', res.rows[sheet]);
-          }
+  const doInspect = useCallback(async (file) => {
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await api.postForm('/excel/inspect', form);
+      console.log('=== EXCEL INSPECT ===');
+      if (res.sheets) {
+        for (const sheet of res.sheets) {
+          console.log(`\nSheet: ${sheet}`);
+          console.log('First 5 rows:', res.rows[sheet]);
         }
-        alert('Check browser console (F12) for column names in your Excel file.');
-      } catch (err) {
-        console.error('Inspect error:', err);
       }
-    };
-    reader.readAsDataURL(file);
+      alert('Check browser console (F12) for column names in your Excel file.');
+    } catch (err) {
+      console.error('Inspect error:', err);
+    }
   }, []);
 
-  const doUpload = useCallback((file) => {
+  const doUpload = useCallback(async (file) => {
     setImporting(true); setImportError(''); setResult(null);
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const base64 = e.target.result.split(',')[1];
-        const res = await api.post('/excel/upload-import', {
-          filename: file.name,
-          content: base64,
-        });
-        if (res.success) { setResult(res.data); setPending(null); }
-        else setImportError(res.error || 'Import failed');
-      } catch (err) {
-        setImportError(err.message || 'Import failed');
-      } finally {
-        setImporting(false);
-      }
-    };
-    reader.onerror = () => {
-      setImportError('Failed to read file from disk');
+    try {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await api.postForm('/excel/upload-import', form);
+      if (res.success) { setResult(res.data); setPending(null); }
+      else setImportError(res.error || 'Import failed');
+    } catch (err) {
+      setImportError(err.message || 'Import failed');
+    } finally {
       setImporting(false);
-    };
-    reader.readAsDataURL(file);
+    }
   }, []);
 
   const dismiss = useCallback(() => {

@@ -6,8 +6,9 @@ export function calculateGross(employee, salaryStructure, overtimeRate, rigBonus
   const otNormal   = (parseFloat(attendance.overtime_normal_hours) || 0) * (parseFloat(overtimeRate?.normal_rate) || 0);
   const otHoliday  = (parseFloat(attendance.overtime_holiday_hours) || 0) * (parseFloat(overtimeRate?.holiday_rate) || 0);
   const overtimeAmt = otNormal + otHoliday;
-  const rigBonus1  = (parseFloat(attendance.rig_bonus_days_1) || 0) * (parseFloat(rigBonusRate?.rate_usd_1) || 0) * (parseFloat(rigBonusRate?.usd_conv_rate) || 278);
-  const rigBonus2  = (parseFloat(attendance.rig_bonus_days_2) || 0) * (parseFloat(rigBonusRate?.rate_usd_2) || 0) * (parseFloat(rigBonusRate?.usd_conv_rate) || 278);
+  const rigEligible = employee.rig_bonus_eligible !== false;
+  const rigBonus1  = rigEligible ? (parseFloat(attendance.rig_bonus_days_1) || 0) * (parseFloat(rigBonusRate?.rate_usd_1) || 0) * (parseFloat(rigBonusRate?.usd_conv_rate) || 278) : 0;
+  const rigBonus2  = rigEligible ? (parseFloat(attendance.rig_bonus_days_2) || 0) * (parseFloat(rigBonusRate?.rate_usd_2) || 0) * (parseFloat(rigBonusRate?.usd_conv_rate) || 278) : 0;
   const rigBonusAmt = rigBonus1 + rigBonus2;
   const travelAmt  = (parseFloat(attendance.travelling_days) || 0) * (parseFloat(travellingRate?.daily_rate) || 0) * (parseFloat(travellingRate?.conv_rate) || 1);
   const gross = basic + hra + utility + conveyance + overtimeAmt + rigBonusAmt + travelAmt

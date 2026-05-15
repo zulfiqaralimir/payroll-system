@@ -106,9 +106,11 @@ export default function EmployeeList() {
       Bank:              e.bank_name || '',
       'Account No':      e.bank_account || '',
       'Mode of Payment': e.mode_of_payment,
-      'PF Member':       e.pf_member ? 'YES' : 'NO',
-      EOBI:              e.eobi_applicable ? 'YES' : 'NO',
-      Status:            e.is_active ? 'Active' : 'Inactive',
+      'PF Member':           e.pf_member ? 'YES' : 'NO',
+      EOBI:                  e.eobi_applicable ? 'YES' : 'NO',
+      Religion:              e.religion || '',
+      'Rig Bonus Eligible':  e.rig_bonus_eligible !== false ? 'YES' : 'NO',
+      Status:                e.is_active ? 'Active' : 'Inactive',
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();

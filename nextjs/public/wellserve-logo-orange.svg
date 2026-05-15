@@ -1,8 +1,8 @@
 <svg width="200" height="230" viewBox="0 0 200 230" fill="none" xmlns="http://www.w3.org/2000/svg">
 
-  <!-- Flame only — rotated 180° so tip points UP -->
+  <!-- Flame — rotated 180° so tip points UP -->
   <g transform="translate(17, 8) scale(2.6) rotate(180, 32, 40)">
-    <path d="M32 70 C32 70 4 52 4 34 C4 20 13 10 22 10 C26 10 29 12 32 16 C35 12 38 10 42 10 C51 10 60 20 60 34 C60 52 32 70 32 70Z" fill="white"/>
+    <path d="M32 70 C32 70 4 52 4 34 C4 20 13 10 22 10 C26 10 29 12 32 16 C35 12 38 10 42 10 C51 10 60 20 60 34 C60 52 32 70 32 70Z" fill="#f97316"/>
     <path d="M32 62 C32 62 10 47 10 34 C10 23 17 15 24 15 C27 15 30 17 32 21 C34 17 37 15 40 15 C47 15 54 23 54 34 C54 47 32 62 32 62Z" fill="#1e293b"/>
     <path d="M32 56 C32 56 15 44 15 33 C15 25 20 19 26 19 C29 19 31 21 32 24 C33 21 35 19 38 19 C44 19 49 25 49 33 C49 44 32 56 32 56Z" fill="#F1C40F"/>
     <path d="M32 50 C32 50 19 41 19 33 C19 26 23 21 28 21 C30 21 31 23 32 26 C33 23 34 21 36 21 C41 21 45 26 45 33 C45 41 32 50 32 50Z" fill="#E67E22"/>
@@ -10,10 +10,10 @@
     <path d="M32 22 C31 26 29 31 30 36 C31 39 32 41 32 41 C32 41 33 39 34 36 C35 31 33 26 32 22Z" fill="#7B241C"/>
   </g>
 
-  <!-- Text OUTSIDE the rotated group — always right-side up -->
+  <!-- Text OUTSIDE the rotated group -->
   <text x="100" y="218" text-anchor="middle"
     font-family="Arial, Helvetica, sans-serif"
-    font-size="26" font-weight="600" fill="white" letter-spacing="2">
+    font-size="26" font-weight="600" fill="#f97316" letter-spacing="2">
     wellserve
   </text>
 

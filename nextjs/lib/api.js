@@ -16,15 +16,24 @@ const request = async (method, url, data) => {
   return res.json();
 };
 
+const postForm = async (url, formData) => {
+  const token = getToken();
+  const headers = {};
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(`/api${url}`, { method: 'POST', headers, body: formData });
+  return res.json();
+};
+
 const api = {
-  get:    (url, params) => {
+  get:      (url, params) => {
     const qs = params ? '?' + new URLSearchParams(params).toString() : '';
     return request('GET', url + qs);
   },
-  post:   (url, data)  => request('POST', url, data),
-  put:    (url, data)  => request('PUT', url, data),
-  del:    (url)        => request('DELETE', url),
-  delete: (url)        => request('DELETE', url),
+  post:     (url, data) => request('POST', url, data),
+  postForm: (url, form) => postForm(url, form),
+  put:      (url, data) => request('PUT', url, data),
+  del:      (url)       => request('DELETE', url),
+  delete:   (url)       => request('DELETE', url),
 };
 
 export default api;

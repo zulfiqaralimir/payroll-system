@@ -167,6 +167,7 @@ export default function EmployeeDetail() {
             <InfoRow label="CNIC"          value={emp.cnic} mono />
             <InfoRow label="Father's Name" value={emp.father_name} />
             <InfoRow label="Mother's Name" value={emp.mother_name} />
+            <InfoRow label="Religion"      value={emp.religion} />
           </Card>
           <Card title="Employment">
             <InfoRow label="Department"      value={emp.department_name} />
@@ -180,8 +181,9 @@ export default function EmployeeDetail() {
             <InfoRow label="Account No." value={emp.bank_account} mono />
           </Card>
           <Card title="Benefits">
-            <InfoRow label="PF Member" value={emp.pf_member ? 'Yes' : 'No'} />
-            <InfoRow label="EOBI"      value={emp.eobi_applicable ? 'Applicable' : 'Not Applicable'} />
+            <InfoRow label="PF Member"         value={emp.pf_member ? 'Yes' : 'No'} />
+            <InfoRow label="EOBI"              value={emp.eobi_applicable ? 'Applicable' : 'Not Applicable'} />
+            <InfoRow label="Rig Bonus"         value={emp.rig_bonus_eligible !== false ? 'Eligible' : 'Excluded'} />
           </Card>
         </div>
       )}

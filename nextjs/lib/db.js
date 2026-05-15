@@ -14,4 +14,11 @@ pool.on('error', (err) => {
   console.error('Unexpected DB error:', err.message);
 });
 
+// Auto-migrate: add new columns if they don't exist yet
+pool.query(`
+  ALTER TABLE employees
+    ADD COLUMN IF NOT EXISTS religion TEXT,
+    ADD COLUMN IF NOT EXISTS rig_bonus_eligible BOOLEAN NOT NULL DEFAULT TRUE
+`).catch(err => console.error('Migration error:', err.message));
+
 export default pool;

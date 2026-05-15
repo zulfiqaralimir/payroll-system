@@ -10,6 +10,7 @@ const BLANK = {
   cnic: '', father_name: '', mother_name: '', date_of_joining: '',
   employment_type: 'permanent', bank_name: 'FBL', bank_account: '',
   mode_of_payment: 'bank', pf_member: false, eobi_applicable: true,
+  religion: '', rig_bonus_eligible: true,
 };
 
 export default function EmployeeForm({ employee, departments, banks, onSave, onClose }) {
@@ -36,8 +37,10 @@ export default function EmployeeForm({ employee, departments, banks, onSave, onC
         bank_name:       employee.bank_name       || 'FBL',
         bank_account:    employee.bank_account    || '',
         mode_of_payment: employee.mode_of_payment || 'bank',
-        pf_member:       employee.pf_member       ?? false,
-        eobi_applicable: employee.eobi_applicable ?? true,
+        pf_member:          employee.pf_member          ?? false,
+        eobi_applicable:    employee.eobi_applicable    ?? true,
+        religion:           employee.religion           || '',
+        rig_bonus_eligible: employee.rig_bonus_eligible ?? true,
       });
     } else {
       setForm(BLANK);
@@ -139,6 +142,15 @@ export default function EmployeeForm({ employee, departments, banks, onSave, onC
                 <input value={form.mother_name} onChange={e => set('mother_name', e.target.value)}
                   placeholder="Fatima Begum" className={inp} />
               </F>
+              <F label="Religion">
+                <select value={form.religion} onChange={e => set('religion', e.target.value)} className={inp}>
+                  <option value="">— Select —</option>
+                  <option value="Islam">Islam</option>
+                  <option value="Christianity">Christianity</option>
+                  <option value="Hinduism">Hinduism</option>
+                  <option value="Other">Other</option>
+                </select>
+              </F>
             </div>
           </div>
 
@@ -195,8 +207,8 @@ export default function EmployeeForm({ employee, departments, banks, onSave, onC
           </div>
 
           <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Benefits</p>
-            <div className="flex gap-6">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">Benefits & Eligibility</p>
+            <div className="flex flex-wrap gap-6">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={form.pf_member}
                   onChange={e => set('pf_member', e.target.checked)}
@@ -208,6 +220,17 @@ export default function EmployeeForm({ employee, departments, banks, onSave, onC
                   onChange={e => set('eobi_applicable', e.target.checked)}
                   className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500" />
                 <span className="text-sm text-gray-700">EOBI Applicable</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={form.rig_bonus_eligible}
+                  onChange={e => set('rig_bonus_eligible', e.target.checked)}
+                  className="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500" />
+                <div>
+                  <span className="text-sm text-gray-700">Rig Bonus Eligible</span>
+                  {!form.rig_bonus_eligible && (
+                    <p className="text-xs text-amber-600 mt-0.5">Excluded from rig bonus payroll</p>
+                  )}
+                </div>
               </label>
             </div>
           </div>
